@@ -1,0 +1,40 @@
+[workspace]
+members = ["rank-eval-python", "test-e2e-local"]
+resolver = "2"
+default-members = ["."]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+license = "MIT OR Apache-2.0"
+authors = ["Arc <attobop@gmail.com>"]
+
+[workspace.dependencies]
+pyo3 = { version = "0.24", features = ["extension-module", "abi3-py37"] }
+tempfile = "3"
+
+[package]
+name = "rank-eval"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "IR evaluation metrics and TREC format parsing for Rust"
+repository = "https://github.com/arclabs561/rank-eval"
+documentation = "https://docs.rs/rank-eval"
+keywords = ["ir", "information-retrieval", "metrics", "ndcg", "trec", "evaluation"]
+categories = ["algorithms", "science"]
+
+[dependencies]
+anyhow = "1.0"
+serde = { version = "1.0", features = ["derive"], optional = true }
+serde_json = { version = "1.0", optional = true }
+
+[features]
+default = ["serde", "serde_json"]
+serde_json = ["dep:serde_json"]
+
+[dev-dependencies]
+tempfile = { workspace = true }

@@ -1,0 +1,16 @@
+[package]
+name = "rank-eval-python"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[lib]
+name = "rank_eval"
+crate-type = ["cdylib"]
+
+[dependencies]
+rank-eval = { path = ".." }
+pyo3 = { workspace = true }
+
