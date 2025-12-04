@@ -100,4 +100,29 @@ jobs:
           
           print("✅ All Python E2E tests passed")
           PYEOF
+      
+      - name: Security audit (safety, pip-audit)
+        if: success() || failure()
+        continue-on-error: true
+        run: |
+          pip install safety pip-audit || echo "⚠️  Failed to install security tools"
+          safety check --json 2>&1 | head -20 || echo "⚠️  Security vulnerabilities found"
+          pip-audit --format=json 2>&1 | head -30 || echo "⚠️  Dependency vulnerabilities found"
+      
+      - name: Best practices check
+        if: success() || failure()
+        continue-on-error: true
+        run: |
+          python3 << 'PYEOF'
+          import rank_eval
+          import inspect
+          
+          if hasattr(rank_eval, '__version__'):
+              print(f"✅ Package version: {rank_eval.__version__}")
+          if rank_eval.__doc__:
+              print("✅ Package has documentation")
+          assert callable(rank_eval.ndcg_at_k), "ndcg_at_k should be callable"
+          assert callable(rank_eval.precision_at_k), "precision_at_k should be callable"
+          print("✅ Best practices check complete")
+          PYEOF
 
