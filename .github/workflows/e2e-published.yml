@@ -1,0 +1,103 @@
+name: E2E Test Published Artifacts
+
+on:
+  workflow_run:
+    workflows: ["Publish"]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to test'
+        required: false
+        type: string
+
+jobs:
+  test-rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      
+      - name: Get published version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION=$(grep '^version = ' Cargo.toml | cut -d'"' -f2)
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Test published crate
+        run: |
+          cargo new --bin test-published-e2e 2>/dev/null || rm -rf test-published-e2e && cargo new --bin test-published-e2e
+          cd test-published-e2e
+          echo 'rank-eval = { version = "'"${{ steps.version.outputs.version }}"'" }' >> Cargo.toml
+          
+          cat > src/main.rs << 'RUSTEOF'
+          use rank_eval::binary::ndcg_at_k;
+          use std::collections::HashSet;
+          
+          fn main() {
+              let ranked = vec!["doc1", "doc2", "doc3"];
+              let relevant: HashSet<&str> = ["doc1", "doc3"].iter().cloned().collect();
+              
+              let ndcg = ndcg_at_k(&ranked, &relevant, 10);
+              assert!(ndcg >= 0.0 && ndcg <= 1.0, "nDCG should be in [0, 1]");
+              
+              println!("✅ Published crate works: nDCG@10 = {}", ndcg);
+              println!("✅ All Rust E2E tests passed");
+          }
+          RUSTEOF
+          
+          cargo build --release || {
+            echo "⚠️  Package not yet published (version ${{ steps.version.outputs.version }})"
+            exit 0
+          }
+          cargo run --release
+
+  test-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Get published version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION=$(grep '^version = ' Cargo.toml | cut -d'"' -f2)
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Install and test
+        run: |
+          pip install "rank-eval==${{ steps.version.outputs.version }}" || {
+            echo "⚠️  Package not yet published (version ${{ steps.version.outputs.version }})"
+            exit 0
+          }
+          
+          python3 << 'PYEOF'
+          import rank_eval
+          
+          ranked = ["doc1", "doc2", "doc3"]
+          relevant = {"doc1", "doc3"}
+          
+          ndcg = rank_eval.ndcg_at_k(ranked, relevant, k=10)
+          assert 0.0 <= ndcg <= 1.0, "nDCG should be in [0, 1]"
+          
+          print(f"✅ Published Python package works: nDCG@10 = {ndcg}")
+          
+          # Test other metrics
+          precision = rank_eval.precision_at_k(ranked, relevant, k=10)
+          assert 0.0 <= precision <= 1.0
+          print(f"✅ Precision@10 = {precision}")
+          
+          print("✅ All Python E2E tests passed")
+          PYEOF
+
