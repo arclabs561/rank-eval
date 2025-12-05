@@ -1,15 +1,8 @@
 # rank-eval
 
-[![CI](https://github.com/arclabs561/rank-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/arclabs561/rank-eval/actions)
-[![Crates.io](https://img.shields.io/crates/v/rank-eval.svg)](https://crates.io/crates/rank-eval)
-[![Docs](https://docs.rs/rank-eval/badge.svg)](https://docs.rs/rank-eval)
-[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE)
-
 Ranking evaluation metrics: NDCG, MAP, MRR, precision, recall. TREC format support.
 
-rank-eval provides standardized implementations of ranking evaluation metrics and utilities for working with TREC-formatted datasets. Different projects implement IR metrics differently, leading to inconsistent results. This crate is the single source of truth for evaluation across ranking projects (`rank-fusion`, `rank-refine`, `rank-relax`).
-
-## Installation
+Standardized implementations of ranking evaluation metrics. Different projects implement metrics differently, leading to inconsistent results. This crate provides a single source of truth for evaluation across ranking projects.
 
 ```bash
 cargo add rank-eval
@@ -134,17 +127,6 @@ Example:
 1 0 doc2 1
 2 0 doc3 2
 ```
-
-## Comparison
-
-- `trec_eval`: Rust-native implementations with clean API. `trec_eval` is a wrapper around C trec_eval.
-- `ir-measures`: Similar goals, but this crate is designed for the ranking workspace and integrates with TREC format parsing.
-
-## Related
-
-- [rank-fusion](https://crates.io/crates/rank-fusion): Combine ranked lists from multiple retrievers
-- [rank-refine](https://crates.io/crates/rank-refine): Score embeddings with MaxSim (ColBERT)
-- [rank-relax](https://crates.io/crates/rank-relax): Differentiable ranking operations for ML training
 
 ## License
 
