@@ -5,21 +5,20 @@
 [![Docs](https://docs.rs/rank-eval/badge.svg)](https://docs.rs/rank-eval)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE)
 
-IR evaluation metrics and TREC format parsing for Rust.
+Ranking evaluation metrics: NDCG, MAP, MRR, precision, recall. TREC format support.
 
 ## Why rank-eval?
 
-Different projects implement IR metrics differently, leading to inconsistent results and reproducibility issues. **Problem**: NDCG implementations vary, MAP calculations differ, and TREC format parsing is duplicated across projects.
+Different projects implement ranking metrics differently, leading to inconsistent results and reproducibility issues. **Problem**: NDCG implementations vary, MAP calculations differ, and evaluation code is duplicated across projects.
 
-**Solution**: `rank-eval` provides standardized, well-tested implementations of IR metrics and TREC format utilities. Single source of truth for evaluation across all ranking projects, ensuring consistent and reproducible results.
+**Solution**: `rank-eval` provides standardized, well-tested implementations of ranking evaluation metrics. Single source of truth for evaluation across all ranking projects, ensuring consistent and reproducible results.
 
-This crate provides standardized implementations of information retrieval evaluation metrics and utilities for working with TREC-formatted datasets. It's designed to be shared across multiple ranking projects (`rank-fusion`, `rank-refine`, `rank-relax`) to ensure consistent evaluation.
+This crate provides standardized implementations of ranking evaluation metrics and utilities for working with TREC-formatted datasets. It's designed to be shared across multiple ranking projects (`rank-fusion`, `rank-refine`, `rank-relax`) to ensure consistent evaluation.
 
 ## Features
 
-- **TREC Format Parsing**: Load and parse TREC run files and qrels
-- **Binary Relevance Metrics**: NDCG, MAP, MRR, Precision@K, Recall@K for binary relevance judgments
-- **Graded Relevance Metrics**: NDCG and MAP for graded relevance judgments (0, 1, 2, 3...)
+- **Ranking Evaluation Metrics**: NDCG, MAP, MRR, Precision@K, Recall@K for binary and graded relevance
+- **TREC Format Support**: Load and parse TREC run files and qrels
 - **Lightweight**: Minimal dependencies, fast compilation
 - **Well-Tested**: Comprehensive test coverage
 
@@ -79,22 +78,6 @@ rank-eval = { path = "../../rank-eval" }
 
 ## Usage
 
-### TREC Format Parsing
-
-```rust
-use rank_eval::trec::{load_trec_runs, load_qrels, group_runs_by_query, group_qrels_by_query};
-
-// Load TREC run file
-let runs = load_trec_runs("runs.txt")?;
-
-// Load TREC qrels file
-let qrels = load_qrels("qrels.txt")?;
-
-// Group by query for evaluation
-let runs_by_query = group_runs_by_query(&runs);
-let qrels_by_query = group_qrels_by_query(&qrels);
-```
-
 ### Binary Relevance Metrics
 
 For scenarios where documents are either relevant or not relevant:
@@ -150,6 +133,22 @@ Available graded metrics:
 - `compute_ndcg()` - nDCG@k for graded relevance
 - `compute_map()` - Mean Average Precision for graded relevance
 
+### TREC Format Parsing
+
+```rust
+use rank_eval::trec::{load_trec_runs, load_qrels, group_runs_by_query, group_qrels_by_query};
+
+// Load TREC run file
+let runs = load_trec_runs("runs.txt")?;
+
+// Load TREC qrels file
+let qrels = load_qrels("qrels.txt")?;
+
+// Group by query for evaluation
+let runs_by_query = group_runs_by_query(&runs);
+let qrels_by_query = group_qrels_by_query(&qrels);
+```
+
 ### Convenience Struct
 
 With the `serde` feature enabled, you can use the `Metrics` struct:
@@ -168,9 +167,9 @@ println!("MAP: {}", metrics.average_precision);
 
 ## Modules
 
-- **`trec`**: TREC format parsing (`TrecRun`, `Qrel`, loading functions, grouping utilities)
 - **`binary`**: Binary relevance metrics (all documents are either relevant or not)
 - **`graded`**: Graded relevance metrics (documents have relevance scores 0, 1, 2, 3...)
+- **`trec`**: TREC format parsing (`TrecRun`, `Qrel`, loading functions, grouping utilities)
 - **`dataset`**: Dataset loaders, validators, and statistics (requires `serde` feature)
 
 ## Cargo Features
@@ -205,7 +204,7 @@ Example:
 
 This crate is designed to be:
 
-1. **Standardized**: Single source of truth for IR metrics across all ranking projects
+1. **Standardized**: Single source of truth for ranking metrics across all ranking projects
 2. **Lightweight**: Minimal dependencies, fast compilation
 3. **Well-Tested**: Comprehensive test coverage for correctness
 4. **Documented**: Clear examples and API documentation

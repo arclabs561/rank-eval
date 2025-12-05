@@ -24,7 +24,7 @@ pub struct BatchResults {
 ///
 /// * `rankings` - Vector of ranked document lists, one per query
 /// * `qrels` - Vector of relevant document sets, one per query
-/// * `metrics` - List of metric names to compute (e.g., ["ndcg@10", "precision@5"])
+/// * `metrics` - List of metric names to compute (e.g., `["ndcg@10", "precision@5"]`)
 ///
 /// # Returns
 ///

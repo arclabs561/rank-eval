@@ -1,26 +1,10 @@
-//! IR evaluation metrics and TREC format parsing for Rust.
+//! Ranking evaluation metrics: NDCG, MAP, MRR, precision, recall. TREC format support.
 //!
 //! This crate provides:
-//! - **TREC format parsing**: Load and parse TREC run files and qrels
-//! - **Binary relevance metrics**: NDCG, MAP, MRR, Precision@K, Recall@K for binary relevance
-//! - **Graded relevance metrics**: NDCG and MAP for graded relevance judgments
+//! - **Ranking evaluation metrics**: NDCG, MAP, MRR, Precision@K, Recall@K for binary and graded relevance
+//! - **TREC format support**: Load and parse TREC run files and qrels
 //!
 //! # Quick Start
-//!
-//! ## TREC Format Parsing
-//!
-//! ```rust,no_run
-//! use rank_eval::trec::{load_trec_runs, load_qrels, TrecRun, Qrel};
-//!
-//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
-//! // Load TREC run file
-//! let runs = load_trec_runs("runs.txt")?;
-//!
-//! // Load TREC qrels file
-//! let qrels = load_qrels("qrels.txt")?;
-//! # Ok(())
-//! # }
-//! ```
 //!
 //! ## Binary Relevance Metrics
 //!
@@ -49,6 +33,21 @@
 //! qrels.insert("doc2".to_string(), 1); // Relevant
 //!
 //! let ndcg = compute_ndcg(&ranked, &qrels, 10);
+//! ```
+//!
+//! ## TREC Format Parsing
+//!
+//! ```rust,no_run
+//! use rank_eval::trec::{load_trec_runs, load_qrels, TrecRun, Qrel};
+//!
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! // Load TREC run file
+//! let runs = load_trec_runs("runs.txt")?;
+//!
+//! // Load TREC qrels file
+//! let qrels = load_qrels("qrels.txt")?;
+//! # Ok(())
+//! # }
 //! ```
 
 pub mod trec;
