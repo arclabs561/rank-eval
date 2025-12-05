@@ -1,5 +1,10 @@
 # rank-eval
 
+[![CI](https://github.com/arclabs561/rank-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/arclabs561/rank-eval/actions)
+[![Crates.io](https://img.shields.io/crates/v/rank-eval.svg)](https://crates.io/crates/rank-eval)
+[![Docs](https://docs.rs/rank-eval/badge.svg)](https://docs.rs/rank-eval)
+[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE)
+
 IR evaluation metrics and TREC format parsing for Rust.
 
 ## Why rank-eval?
@@ -225,6 +230,7 @@ When adding new metrics:
 - **[rank-fusion](https://crates.io/crates/rank-fusion)**: Combine ranked lists from multiple retrievers
 - **[rank-refine](https://crates.io/crates/rank-refine)**: Score embeddings with MaxSim (ColBERT)
 - **[rank-relax](https://crates.io/crates/rank-relax)**: Differentiable ranking operations for ML training
+- **[Integration Examples](../INTEGRATION_EXAMPLES.md)**: Complete pipelines using multiple rank-* crates together
 
 ## License
 

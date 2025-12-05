@@ -70,8 +70,14 @@ pub fn recall_at_k<I: Eq + std::hash::Hash>(ranked: &[I], relevant: &HashSet<I>,
 
 /// Mean Reciprocal Rank: 1 / rank of first relevant document.
 ///
-/// MRR = 1 / (rank of first relevant doc)
+/// Formula: `MRR = 1 / rank(first relevant doc)`
+///
+/// For a single query, this is Reciprocal Rank (RR). When averaged across queries,
+/// it becomes Mean Reciprocal Rank (MRR).
+///
 /// Returns 0.0 if no relevant docs found.
+///
+/// Reference: Manning et al. (2008) [Introduction to Information Retrieval, Chapter 8](https://nlp.stanford.edu/IR-book/html/htmledition/evaluation-in-information-retrieval-1.html)
 ///
 /// # Example
 ///
@@ -96,7 +102,17 @@ pub fn mrr<I: Eq + std::hash::Hash>(ranked: &[I], relevant: &HashSet<I>) -> f64 
 
 /// Discounted Cumulative Gain at k.
 ///
-/// DCG@k = Σᵢ (rel(i) / log₂(i + 2))
+/// Formula: `DCG@k = Σᵢ (rel(i) / log₂(i + 2))`
+///
+/// Where:
+/// - `rel(i)` = 1 if document at position i is relevant, 0 otherwise (binary relevance)
+/// - `i` is 0-indexed position (so log₂(i + 2) discounts position 0 by log₂(2) = 1.0)
+///
+/// DCG accumulates relevance scores with logarithmic discounting, giving more weight
+/// to relevant documents appearing earlier in the ranking.
+///
+/// Reference: Järvelin & Kekäläinen (2002) "Cumulated gain-based evaluation of IR techniques"
+/// Manning et al. (2008) [Introduction to Information Retrieval, Chapter 8](https://nlp.stanford.edu/IR-book/html/htmledition/evaluation-in-information-retrieval-1.html)
 ///
 /// Uses binary relevance: rel(i) = 1 if relevant, 0 otherwise.
 ///
@@ -146,9 +162,15 @@ pub fn idcg_at_k(n_relevant: usize, k: usize) -> f64 {
 
 /// Normalized DCG at k.
 ///
-/// nDCG@k = DCG@k / IDCG@k
+/// Formula: `nDCG@k = DCG@k / IDCG@k`
+///
+/// Where `IDCG@k` is the ideal DCG (all relevant documents ranked at the top).
+/// Normalization ensures the metric is bounded [0.0, 1.0] and comparable across queries.
 ///
 /// Returns a value between 0.0 and 1.0, where 1.0 indicates perfect ranking.
+///
+/// Reference: Järvelin & Kekäläinen (2002) "Cumulated gain-based evaluation of IR techniques"
+/// Manning et al. (2008) [Introduction to Information Retrieval, Chapter 8](https://nlp.stanford.edu/IR-book/html/htmledition/evaluation-in-information-retrieval-1.html)
 ///
 /// # Example
 ///
@@ -172,9 +194,17 @@ pub fn ndcg_at_k<I: Eq + std::hash::Hash>(ranked: &[I], relevant: &HashSet<I>, k
 
 /// Average Precision: average of precision at each relevant doc.
 ///
-/// AP = (1/|R|) × Σᵢ (P@i × rel(i))
+/// Formula: `AP = (1/|R|) × Σᵢ (P@i × rel(i))`
 ///
-/// Where R is the set of relevant documents, and P@i is precision at position i.
+/// Where:
+/// - `R` is the set of relevant documents
+/// - `P@i` is precision at position i (number of relevant docs up to position i / i)
+/// - `rel(i)` = 1 if document at position i is relevant, 0 otherwise
+///
+/// AP rewards systems that rank relevant documents higher. For a single query,
+/// this is Average Precision; averaged across queries, it becomes Mean Average Precision (MAP).
+///
+/// Reference: Manning et al. (2008) [Introduction to Information Retrieval, Chapter 8](https://nlp.stanford.edu/IR-book/html/htmledition/evaluation-in-information-retrieval-1.html)
 ///
 /// # Example
 ///
