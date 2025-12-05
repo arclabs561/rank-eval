@@ -10,6 +10,18 @@ use std::collections::HashMap;
 
 /// Compute nDCG@k for graded relevance.
 ///
+/// Formula: `nDCG@k = DCG@k / IDCG@k`
+///
+/// Where:
+/// - `DCG@k = Σᵢ (rel(i) / log₂(i + 2))` with `rel(i)` as the actual relevance grade (0, 1, 2, ...)
+/// - `IDCG@k` is the ideal DCG when all relevant documents are sorted by relevance grade (descending)
+///
+/// Unlike binary nDCG, this uses the actual relevance scores in the gain calculation,
+/// making it more suitable for datasets with graded relevance judgments (e.g., TREC qrels with grades 0-4).
+///
+/// Reference: Järvelin & Kekäläinen (2002) "Cumulated gain-based evaluation of IR techniques"
+/// Manning et al. (2008) [Introduction to Information Retrieval, Chapter 8](https://nlp.stanford.edu/IR-book/html/htmledition/evaluation-in-information-retrieval-1.html)
+///
 /// Uses actual relevance scores (u32) in the DCG calculation, not just binary relevance.
 ///
 /// # Arguments
@@ -68,6 +80,21 @@ pub fn compute_ndcg(
 }
 
 /// Compute Mean Average Precision (MAP) for graded relevance.
+///
+/// Formula: `AP = (1/|R|) × Σᵢ (P@i × rel(i))`
+///
+/// Where:
+/// - `R` is the set of documents with relevance > 0
+/// - `P@i` is precision at position i
+/// - `rel(i)` = 1 if document at position i has relevance > 0, 0 otherwise
+///
+/// For a single query, this is Average Precision (AP). When averaged across queries,
+/// it becomes Mean Average Precision (MAP).
+///
+/// Note: MAP is traditionally defined for binary relevance, so this implementation
+/// treats any relevance > 0 as relevant (binary conversion).
+///
+/// Reference: Manning et al. (2008) [Introduction to Information Retrieval, Chapter 8](https://nlp.stanford.edu/IR-book/html/htmledition/evaluation-in-information-retrieval-1.html)
 ///
 /// Uses binary relevance (relevance > 0) for MAP calculation, as MAP is
 /// traditionally defined for binary relevance.
