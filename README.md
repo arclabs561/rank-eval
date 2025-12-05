@@ -166,10 +166,9 @@ println!("MAP: {}", metrics.average_precision);
 - **`trec`**: TREC format parsing (`TrecRun`, `Qrel`, loading functions, grouping utilities)
 - **`binary`**: Binary relevance metrics (all documents are either relevant or not)
 - **`graded`**: Graded relevance metrics (documents have relevance scores 0, 1, 2, 3...)
-- **`trec`**: TREC format parsing (run files and qrels)
 - **`dataset`**: Dataset loaders, validators, and statistics (requires `serde` feature)
 
-## Features
+## Cargo Features
 
 - **`serde`** (default): Enables serialization support for the `Metrics` struct
 
