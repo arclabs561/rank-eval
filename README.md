@@ -2,6 +2,12 @@
 
 IR evaluation metrics and TREC format parsing for Rust.
 
+## Why rank-eval?
+
+Different projects implement IR metrics differently, leading to inconsistent results and reproducibility issues. **Problem**: NDCG implementations vary, MAP calculations differ, and TREC format parsing is duplicated across projects.
+
+**Solution**: `rank-eval` provides standardized, well-tested implementations of IR metrics and TREC format utilities. Single source of truth for evaluation across all ranking projects, ensuring consistent and reproducible results.
+
 This crate provides standardized implementations of information retrieval evaluation metrics and utilities for working with TREC-formatted datasets. It's designed to be shared across multiple ranking projects (`rank-fusion`, `rank-refine`, `rank-relax`) to ensure consistent evaluation.
 
 ## Features
