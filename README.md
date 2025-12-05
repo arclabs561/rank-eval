@@ -7,80 +7,17 @@
 
 Ranking evaluation metrics: NDCG, MAP, MRR, precision, recall. TREC format support.
 
-## Why rank-eval?
+rank-eval provides standardized implementations of ranking evaluation metrics and utilities for working with TREC-formatted datasets. Different projects implement IR metrics differently, leading to inconsistent results. This crate is the single source of truth for evaluation across ranking projects (`rank-fusion`, `rank-refine`, `rank-relax`).
 
-Different projects implement ranking metrics differently, leading to inconsistent results and reproducibility issues. **Problem**: NDCG implementations vary, MAP calculations differ, and evaluation code is duplicated across projects.
-
-**Solution**: `rank-eval` provides standardized, well-tested implementations of ranking evaluation metrics. Single source of truth for evaluation across all ranking projects, ensuring consistent and reproducible results.
-
-This crate provides standardized implementations of ranking evaluation metrics and utilities for working with TREC-formatted datasets. It's designed to be shared across multiple ranking projects (`rank-fusion`, `rank-refine`, `rank-relax`) to ensure consistent evaluation.
-
-## Features
-
-- **Ranking Evaluation Metrics**: NDCG, MAP, MRR, Precision@K, Recall@K for binary and graded relevance
-- **TREC Format Support**: Load and parse TREC run files and qrels
-- **Lightweight**: Minimal dependencies, fast compilation
-- **Well-Tested**: Comprehensive test coverage
-
-## Quick Start
-
-### Rust
+## Installation
 
 ```bash
 cargo add rank-eval
 ```
 
-```rust
-use rank_eval::binary::ndcg_at_k;
-use std::collections::HashSet;
-
-let ranked = vec!["doc1", "doc2", "doc3"];
-let relevant: HashSet<_> = ["doc1", "doc3"].into_iter().collect();
-let ndcg = ndcg_at_k(&ranked, &relevant, 10);
-```
-
-### Python
-
-**Install from PyPI:**
-
-```bash
-pip install rank-eval
-```
-
-```python
-import rank_eval
-
-ranked = ["doc1", "doc2", "doc3"]
-relevant = {"doc1", "doc3"}
-ndcg = rank_eval.ndcg_at_k(ranked, relevant, k=10)
-```
-
-**For development/contributing:**
-
-```bash
-cd rank-eval-python
-uv venv
-source .venv/bin/activate
-uv tool install maturin
-maturin develop --uv
-```
-
-### Using as Dependency
-
-Add to your `Cargo.toml`:
-
-```toml
-[dependencies]
-rank-eval = { path = "../../rank-eval" }
-# Or when published:
-# rank-eval = "0.1"
-```
-
 ## Usage
 
-### Binary Relevance Metrics
-
-For scenarios where documents are either relevant or not relevant:
+### Binary Relevance
 
 ```rust
 use std::collections::HashSet;
@@ -107,9 +44,7 @@ Available binary metrics:
 - `success_at_k()` - Success at k (binary)
 - `r_precision()` - R-Precision
 
-### Graded Relevance Metrics
-
-For scenarios with graded relevance judgments (0 = not relevant, 1+ = relevant, higher = more relevant):
+### Graded Relevance
 
 ```rust
 use std::collections::HashMap;
@@ -149,9 +84,9 @@ let runs_by_query = group_runs_by_query(&runs);
 let qrels_by_query = group_qrels_by_query(&qrels);
 ```
 
-### Convenience Struct
+### Metrics Struct
 
-With the `serde` feature enabled, you can use the `Metrics` struct:
+With the `serde` feature:
 
 ```rust
 use rank_eval::binary::Metrics;
@@ -167,14 +102,14 @@ println!("MAP: {}", metrics.average_precision);
 
 ## Modules
 
-- **`binary`**: Binary relevance metrics (all documents are either relevant or not)
-- **`graded`**: Graded relevance metrics (documents have relevance scores 0, 1, 2, 3...)
-- **`trec`**: TREC format parsing (`TrecRun`, `Qrel`, loading functions, grouping utilities)
-- **`dataset`**: Dataset loaders, validators, and statistics (requires `serde` feature)
+- `binary`: Binary relevance metrics
+- `graded`: Graded relevance metrics (relevance scores 0, 1, 2, 3...)
+- `trec`: TREC format parsing (`TrecRun`, `Qrel`, loading functions, grouping utilities)
+- `dataset`: Dataset loaders, validators, statistics (requires `serde` feature)
 
-## Cargo Features
+## Features
 
-- **`serde`** (default): Enables serialization support for the `Metrics` struct
+- `serde` (default): Serialization support for the `Metrics` struct
 
 ## TREC Format
 
@@ -200,36 +135,16 @@ Example:
 2 0 doc3 2
 ```
 
-## Design Philosophy
+## Comparison
 
-This crate is designed to be:
+- `trec_eval`: Rust-native implementations with clean API. `trec_eval` is a wrapper around C trec_eval.
+- `ir-measures`: Similar goals, but this crate is designed for the ranking workspace and integrates with TREC format parsing.
 
-1. **Standardized**: Single source of truth for ranking metrics across all ranking projects
-2. **Lightweight**: Minimal dependencies, fast compilation
-3. **Well-Tested**: Comprehensive test coverage for correctness
-4. **Documented**: Clear examples and API documentation
-5. **Extensible**: Easy to add new metrics or formats
+## Related
 
-## Comparison with Other Crates
-
-- **`trec_eval`**: This crate focuses on Rust-native implementations with a clean API, while `trec_eval` is a wrapper around the C trec_eval tool.
-- **`ir-measures`**: Similar goals, but this crate is designed specifically for the ranking workspace and integrates with TREC format parsing.
-
-## Contributing
-
-When adding new metrics:
-
-1. Add to the appropriate module (`binary.rs` or `graded.rs`)
-2. Include comprehensive tests
-3. Add documentation with examples
-4. Update this README
-
-## See Also
-
-- **[rank-fusion](https://crates.io/crates/rank-fusion)**: Combine ranked lists from multiple retrievers
-- **[rank-refine](https://crates.io/crates/rank-refine)**: Score embeddings with MaxSim (ColBERT)
-- **[rank-relax](https://crates.io/crates/rank-relax)**: Differentiable ranking operations for ML training
-- **[Integration Examples](../INTEGRATION_EXAMPLES.md)**: Complete pipelines using multiple rank-* crates together
+- [rank-fusion](https://crates.io/crates/rank-fusion): Combine ranked lists from multiple retrievers
+- [rank-refine](https://crates.io/crates/rank-refine): Score embeddings with MaxSim (ColBERT)
+- [rank-relax](https://crates.io/crates/rank-relax): Differentiable ranking operations for ML training
 
 ## License
 
