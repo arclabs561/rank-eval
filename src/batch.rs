@@ -127,11 +127,7 @@ pub fn evaluate_batch_binary<I: Eq + std::hash::Hash + Clone>(
 /// # Returns
 ///
 /// `BatchResults` with per-query results and aggregated means.
-pub fn evaluate_trec_batch(
-    runs: &[TrecRun],
-    qrels: &[Qrel],
-    metrics: &[&str],
-) -> BatchResults {
+pub fn evaluate_trec_batch(runs: &[TrecRun], qrels: &[Qrel], metrics: &[&str]) -> BatchResults {
     use crate::trec::{group_qrels_by_query, group_runs_by_query};
 
     let runs_by_query = group_runs_by_query(runs);
@@ -158,7 +154,8 @@ pub fn evaluate_trec_batch(
         let ranked_run = &query_runs[run_tag];
 
         // Convert to ranked list
-        let mut ranked: Vec<(&String, f32)> = ranked_run.iter().map(|(id, score)| (id, *score)).collect();
+        let mut ranked: Vec<(&String, f32)> =
+            ranked_run.iter().map(|(id, score)| (id, *score)).collect();
         ranked.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
         let ranked_ids: Vec<&String> = ranked.iter().map(|(id, _)| *id).collect();
 
@@ -226,10 +223,7 @@ mod tests {
 
     #[test]
     fn test_evaluate_batch_binary() {
-        let rankings = vec![
-            vec!["doc1", "doc2", "doc3"],
-            vec!["doc4", "doc5", "doc6"],
-        ];
+        let rankings = vec![vec!["doc1", "doc2", "doc3"], vec!["doc4", "doc5", "doc6"]];
         let qrels = vec![
             ["doc1", "doc3"].into_iter().collect::<HashSet<_>>(),
             ["doc4"].into_iter().collect::<HashSet<_>>(),
@@ -242,4 +236,3 @@ mod tests {
         assert!(results.aggregated.contains_key("precision@5"));
     }
 }
-

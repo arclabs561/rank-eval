@@ -4,10 +4,12 @@
 
 #[cfg(feature = "serde")]
 mod tests {
-    use rank_eval::trec::{load_trec_runs, load_qrels, group_runs_by_query, group_qrels_by_query, TrecRun, Qrel};
     use rank_eval::binary::*;
-    use rank_eval::graded::*;
     use rank_eval::dataset::*;
+    use rank_eval::graded::*;
+    use rank_eval::trec::{
+        group_qrels_by_query, group_runs_by_query, load_qrels, load_trec_runs, Qrel, TrecRun,
+    };
     use std::collections::{HashMap, HashSet};
     use std::fs;
     use std::io::Write;
@@ -43,7 +45,7 @@ mod tests {
         // Simulate RRF fusion
         let bm25 = &query1_runs["bm25"];
         let dense = &query1_runs["dense"];
-        
+
         // Simple fusion: average scores
         let mut fused: HashMap<String, f32> = HashMap::new();
         for (id, score) in bm25 {
@@ -214,4 +216,3 @@ mod tests {
         assert!(all_ndcgs.iter().all(|&n| n > 0.0 && n <= 1.0));
     }
 }
-

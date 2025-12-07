@@ -132,11 +132,8 @@ pub fn confidence_interval(scores: &[f64], confidence: f64) -> (f64, f64) {
     }
 
     let mean = scores.iter().sum::<f64>() / scores.len() as f64;
-    let variance = scores
-        .iter()
-        .map(|s| (s - mean).powi(2))
-        .sum::<f64>()
-        / (scores.len() - 1) as f64;
+    let variance =
+        scores.iter().map(|s| (s - mean).powi(2)).sum::<f64>() / (scores.len() - 1) as f64;
     let std_dev = variance.sqrt();
 
     // Standard error
@@ -187,9 +184,11 @@ pub fn cohens_d(method_a: &[f64], method_b: &[f64]) -> f64 {
     let mean_b = method_b.iter().sum::<f64>() / method_b.len() as f64;
 
     // Pooled standard deviation
-    let var_a: f64 = method_a.iter().map(|x| (x - mean_a).powi(2)).sum::<f64>() / (method_a.len() - 1) as f64;
-    let var_b: f64 = method_b.iter().map(|x| (x - mean_b).powi(2)).sum::<f64>() / (method_b.len() - 1) as f64;
-    
+    let var_a: f64 =
+        method_a.iter().map(|x| (x - mean_a).powi(2)).sum::<f64>() / (method_a.len() - 1) as f64;
+    let var_b: f64 =
+        method_b.iter().map(|x| (x - mean_b).powi(2)).sum::<f64>() / (method_b.len() - 1) as f64;
+
     let pooled_std = ((var_a + var_b) / 2.0).sqrt();
 
     if pooled_std < 1e-10 {
@@ -230,7 +229,8 @@ fn normal_quantile(p: f64) -> f64 {
         -normal_quantile(1.0 - p)
     } else if p > 0.5 {
         let t = (-2.0 * (1.0 - p).ln()).sqrt();
-        t - (2.515517 + 0.802853 * t + 0.010328 * t * t) / (1.0 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t)
+        t - (2.515517 + 0.802853 * t + 0.010328 * t * t)
+            / (1.0 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t)
     } else {
         0.0
     }
@@ -270,4 +270,3 @@ mod tests {
         assert!(d > 0.0); // method_a should be better
     }
 }
-

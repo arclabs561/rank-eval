@@ -266,11 +266,7 @@ pub fn average_precision<I: Eq + std::hash::Hash>(ranked: &[I], relevant: &HashS
 /// let err = err_at_k(&ranked, &relevant, 10);
 /// // First relevant at rank 2, so ERR = 1/2 = 0.5 (same as MRR for binary)
 /// ```
-pub fn err_at_k<I: Eq + std::hash::Hash>(
-    ranked: &[I],
-    relevant: &HashSet<I>,
-    k: usize,
-) -> f64 {
+pub fn err_at_k<I: Eq + std::hash::Hash>(ranked: &[I], relevant: &HashSet<I>, k: usize) -> f64 {
     if relevant.is_empty() {
         return 0.0;
     }
@@ -407,11 +403,7 @@ pub fn f_measure_at_k<I: Eq + std::hash::Hash>(
 /// assert_eq!(success_at_k(&ranked, &relevant, 3), 1.0);
 /// assert_eq!(success_at_k(&ranked, &relevant, 1), 0.0);
 /// ```
-pub fn success_at_k<I: Eq + std::hash::Hash>(
-    ranked: &[I],
-    relevant: &HashSet<I>,
-    k: usize,
-) -> f64 {
+pub fn success_at_k<I: Eq + std::hash::Hash>(ranked: &[I], relevant: &HashSet<I>, k: usize) -> f64 {
     if ranked.iter().take(k).any(|id| relevant.contains(id)) {
         1.0
     } else {
@@ -509,7 +501,7 @@ mod tests {
         let ranked = vec!["a", "b", "c"];
         let relevant: HashSet<_> = ["a", "c", "e"].into_iter().collect();
 
-        assert!((recall_at_k(&ranked, &relevant, 3) - 2.0/3.0).abs() < 1e-9);
+        assert!((recall_at_k(&ranked, &relevant, 3) - 2.0 / 3.0).abs() < 1e-9);
     }
 
     #[test]
@@ -654,4 +646,3 @@ mod tests {
         assert!((r_prec2 - 1.0).abs() < 1e-9);
     }
 }
-

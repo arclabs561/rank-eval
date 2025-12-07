@@ -49,11 +49,7 @@ use std::collections::HashMap;
 /// let ndcg = compute_ndcg(&ranked, &qrels, 3);
 /// assert!(ndcg >= 0.0 && ndcg <= 1.0);
 /// ```
-pub fn compute_ndcg(
-    ranked: &[(String, f32)],
-    qrels: &HashMap<String, u32>,
-    k: usize,
-) -> f64 {
+pub fn compute_ndcg(ranked: &[(String, f32)], qrels: &HashMap<String, u32>, k: usize) -> f64 {
     let mut dcg = 0.0;
     let mut ideal_gains: Vec<u32> = qrels.values().copied().filter(|&r| r > 0).collect();
     ideal_gains.sort_by(|a, b| b.cmp(a));
@@ -169,7 +165,7 @@ mod tests {
 
         let ndcg = compute_ndcg(&ranked, &qrels, 3);
         assert!(ndcg > 0.0 && ndcg <= 1.0);
-        
+
         // doc1 (relevance 2) at rank 0 should contribute more than doc2 (relevance 1) at rank 1
         // So nDCG should be > 0
         assert!(ndcg > 0.5); // Should be reasonably high since highly relevant doc is first
@@ -189,7 +185,7 @@ mod tests {
 
         let map = compute_map(&ranked, &qrels);
         assert!(map >= 0.0 && map <= 1.0);
-        
+
         // Both doc1 and doc2 are relevant (relevance > 0)
         // doc1 at rank 0: precision = 1/1 = 1.0
         // doc2 at rank 1: precision = 2/2 = 1.0
@@ -199,10 +195,7 @@ mod tests {
 
     #[test]
     fn test_compute_ndcg_no_relevant() {
-        let ranked = vec![
-            ("doc1".to_string(), 0.9),
-            ("doc2".to_string(), 0.8),
-        ];
+        let ranked = vec![("doc1".to_string(), 0.9), ("doc2".to_string(), 0.8)];
         let qrels = HashMap::new(); // No relevant documents
 
         let ndcg = compute_ndcg(&ranked, &qrels, 2);
@@ -211,14 +204,10 @@ mod tests {
 
     #[test]
     fn test_compute_map_no_relevant() {
-        let ranked = vec![
-            ("doc1".to_string(), 0.9),
-            ("doc2".to_string(), 0.8),
-        ];
+        let ranked = vec![("doc1".to_string(), 0.9), ("doc2".to_string(), 0.8)];
         let qrels = HashMap::new(); // No relevant documents
 
         let map = compute_map(&ranked, &qrels);
         assert_eq!(map, 0.0);
     }
 }
-

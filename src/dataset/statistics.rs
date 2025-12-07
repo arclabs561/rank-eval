@@ -89,10 +89,7 @@ pub struct Percentiles {
 }
 
 /// Compute comprehensive statistics for a dataset.
-pub fn compute_comprehensive_stats(
-    runs: &[TrecRun],
-    qrels: &[Qrel],
-) -> ComprehensiveStats {
+pub fn compute_comprehensive_stats(runs: &[TrecRun], qrels: &[Qrel]) -> ComprehensiveStats {
     let runs_stats = compute_run_statistics(runs);
     let qrels_stats = compute_qrel_statistics(qrels);
     let overlap = compute_overlap_statistics(runs, qrels);
@@ -141,7 +138,7 @@ fn compute_run_statistics(runs: &[TrecRun]) -> RunStatistics {
     let unique_queries: HashSet<String> = runs.iter().map(|r| r.query_id.clone()).collect();
     let unique_documents: HashSet<String> = runs.iter().map(|r| r.doc_id.clone()).collect();
     let unique_run_tags: HashSet<String> = runs.iter().map(|r| r.run_tag.clone()).collect();
-    
+
     let mut queries_per_run: HashMap<String, usize> = HashMap::new();
     let mut documents_per_run: HashMap<String, usize> = HashMap::new();
     let mut docs_per_query: HashMap<String, usize> = HashMap::new();
@@ -210,7 +207,7 @@ fn compute_qrel_statistics(qrels: &[Qrel]) -> QrelStatistics {
 
     let unique_queries: HashSet<String> = qrels.iter().map(|q| q.query_id.clone()).collect();
     let unique_documents: HashSet<String> = qrels.iter().map(|q| q.doc_id.clone()).collect();
-    
+
     let mut relevance_dist: HashMap<u32, usize> = HashMap::new();
     let mut queries_with_relevant: HashSet<String> = HashSet::new();
     let mut total_relevant = 0;
@@ -244,14 +241,16 @@ fn compute_qrel_statistics(qrels: &[Qrel]) -> QrelStatistics {
 fn compute_overlap_statistics(runs: &[TrecRun], qrels: &[Qrel]) -> OverlapStatistics {
     let runs_queries: HashSet<String> = runs.iter().map(|r| r.query_id.clone()).collect();
     let qrels_queries: HashSet<String> = qrels.iter().map(|q| q.query_id.clone()).collect();
-    
+
     let queries_in_both: HashSet<_> = runs_queries.intersection(&qrels_queries).cloned().collect();
-    let queries_only_in_runs: HashSet<_> = runs_queries.difference(&qrels_queries).cloned().collect();
-    let queries_only_in_qrels: HashSet<_> = qrels_queries.difference(&runs_queries).cloned().collect();
+    let queries_only_in_runs: HashSet<_> =
+        runs_queries.difference(&qrels_queries).cloned().collect();
+    let queries_only_in_qrels: HashSet<_> =
+        qrels_queries.difference(&runs_queries).cloned().collect();
 
     let runs_docs: HashSet<String> = runs.iter().map(|r| r.doc_id.clone()).collect();
     let qrels_docs: HashSet<String> = qrels.iter().map(|q| q.doc_id.clone()).collect();
-    
+
     let documents_in_both: HashSet<_> = runs_docs.intersection(&qrels_docs).cloned().collect();
     let documents_only_in_runs: HashSet<_> = runs_docs.difference(&qrels_docs).cloned().collect();
     let documents_only_in_qrels: HashSet<_> = qrels_docs.difference(&runs_docs).cloned().collect();
@@ -283,7 +282,7 @@ fn compute_overlap_statistics(runs: &[TrecRun], qrels: &[Qrel]) -> OverlapStatis
 /// Compute quality metrics.
 fn compute_quality_metrics(runs: &[TrecRun]) -> QualityMetrics {
     let mut queries_with_runs: HashMap<String, HashSet<String>> = HashMap::new();
-    
+
     for run in runs {
         queries_with_runs
             .entry(run.query_id.clone())
@@ -350,13 +349,15 @@ fn compute_score_distribution(scores: &[f32]) -> ScoreDistribution {
     let min = scores[0];
     let max = scores[scores.len() - 1];
     let mean = scores.iter().sum::<f32>() as f64 / scores.len() as f64;
-    
-    let variance = scores.iter()
+
+    let variance = scores
+        .iter()
         .map(|&s| {
             let diff = s as f64 - mean;
             diff * diff
         })
-        .sum::<f64>() / scores.len() as f64;
+        .sum::<f64>()
+        / scores.len() as f64;
     let std_dev = variance.sqrt();
 
     let median = if scores.len() % 2 == 0 {
@@ -396,54 +397,130 @@ pub fn print_statistics_report(stats: &ComprehensiveStats) {
     println!("╚════════════════════════════════════════════════════════════════╝\n");
 
     println!("┌─ Run File Statistics ──────────────────────────────────────────┐");
-    println!("│ Total entries:        {:>10}                                │", stats.runs.total_entries);
-    println!("│ Unique queries:       {:>10}                                │", stats.runs.unique_queries);
-    println!("│ Unique documents:     {:>10}                                │", stats.runs.unique_documents);
-    println!("│ Unique run tags:      {:>10}                                │", stats.runs.unique_run_tags);
-    println!("│ Run tags:             {:>10}                                │", stats.runs.run_tags.join(", "));
-    println!("│ Avg docs per query:   {:>10.2}                                │", stats.runs.avg_docs_per_query);
-    println!("│ Min docs per query:   {:>10}                                │", stats.runs.min_docs_per_query);
-    println!("│ Max docs per query:   {:>10}                                │", stats.runs.max_docs_per_query);
+    println!(
+        "│ Total entries:        {:>10}                                │",
+        stats.runs.total_entries
+    );
+    println!(
+        "│ Unique queries:       {:>10}                                │",
+        stats.runs.unique_queries
+    );
+    println!(
+        "│ Unique documents:     {:>10}                                │",
+        stats.runs.unique_documents
+    );
+    println!(
+        "│ Unique run tags:      {:>10}                                │",
+        stats.runs.unique_run_tags
+    );
+    println!(
+        "│ Run tags:             {:>10}                                │",
+        stats.runs.run_tags.join(", ")
+    );
+    println!(
+        "│ Avg docs per query:   {:>10.2}                                │",
+        stats.runs.avg_docs_per_query
+    );
+    println!(
+        "│ Min docs per query:   {:>10}                                │",
+        stats.runs.min_docs_per_query
+    );
+    println!(
+        "│ Max docs per query:   {:>10}                                │",
+        stats.runs.max_docs_per_query
+    );
     println!("└────────────────────────────────────────────────────────────────┘\n");
 
     println!("┌─ Score Distribution ───────────────────────────────────────────┐");
-    println!("│ Min:        {:>10.6}  │  Max:        {:>10.6}              │", 
-        stats.runs.score_distribution.min, stats.runs.score_distribution.max);
-    println!("│ Mean:       {:>10.6}  │  Median:     {:>10.6}              │", 
-        stats.runs.score_distribution.mean, stats.runs.score_distribution.median);
-    println!("│ Std Dev:    {:>10.6}  │  P25:        {:>10.6}              │", 
-        stats.runs.score_distribution.std_dev, stats.runs.score_distribution.percentiles.p25);
-    println!("│ P50:        {:>10.6}  │  P75:        {:>10.6}              │", 
-        stats.runs.score_distribution.percentiles.p50, stats.runs.score_distribution.percentiles.p75);
-    println!("│ P90:        {:>10.6}  │  P95:        {:>10.6}              │", 
-        stats.runs.score_distribution.percentiles.p90, stats.runs.score_distribution.percentiles.p95);
+    println!(
+        "│ Min:        {:>10.6}  │  Max:        {:>10.6}              │",
+        stats.runs.score_distribution.min, stats.runs.score_distribution.max
+    );
+    println!(
+        "│ Mean:       {:>10.6}  │  Median:     {:>10.6}              │",
+        stats.runs.score_distribution.mean, stats.runs.score_distribution.median
+    );
+    println!(
+        "│ Std Dev:    {:>10.6}  │  P25:        {:>10.6}              │",
+        stats.runs.score_distribution.std_dev, stats.runs.score_distribution.percentiles.p25
+    );
+    println!(
+        "│ P50:        {:>10.6}  │  P75:        {:>10.6}              │",
+        stats.runs.score_distribution.percentiles.p50,
+        stats.runs.score_distribution.percentiles.p75
+    );
+    println!(
+        "│ P90:        {:>10.6}  │  P95:        {:>10.6}              │",
+        stats.runs.score_distribution.percentiles.p90,
+        stats.runs.score_distribution.percentiles.p95
+    );
     println!("└────────────────────────────────────────────────────────────────┘\n");
 
     println!("┌─ Qrel Statistics ─────────────────────────────────────────────┐");
-    println!("│ Total entries:        {:>10}                                │", stats.qrels.total_entries);
-    println!("│ Unique queries:       {:>10}                                │", stats.qrels.unique_queries);
-    println!("│ Unique documents:      {:>10}                                │", stats.qrels.unique_documents);
-    println!("│ Queries with relevant: {:>10}                                │", stats.qrels.queries_with_relevant);
-    println!("│ Total relevant docs:   {:>10}                                │", stats.qrels.total_relevant);
-    println!("│ Avg relevance/query:   {:>10.2}                                │", stats.qrels.avg_relevance_per_query);
+    println!(
+        "│ Total entries:        {:>10}                                │",
+        stats.qrels.total_entries
+    );
+    println!(
+        "│ Unique queries:       {:>10}                                │",
+        stats.qrels.unique_queries
+    );
+    println!(
+        "│ Unique documents:      {:>10}                                │",
+        stats.qrels.unique_documents
+    );
+    println!(
+        "│ Queries with relevant: {:>10}                                │",
+        stats.qrels.queries_with_relevant
+    );
+    println!(
+        "│ Total relevant docs:   {:>10}                                │",
+        stats.qrels.total_relevant
+    );
+    println!(
+        "│ Avg relevance/query:   {:>10.2}                                │",
+        stats.qrels.avg_relevance_per_query
+    );
     println!("└────────────────────────────────────────────────────────────────┘\n");
 
     println!("┌─ Overlap Statistics ───────────────────────────────────────────┐");
-    println!("│ Queries in both:      {:>10}  ({:.1}% overlap)            │", 
-        stats.overlap.queries_in_both, stats.overlap.query_overlap_ratio * 100.0);
-    println!("│ Queries only in runs: {:>10}                                │", stats.overlap.queries_only_in_runs);
-    println!("│ Queries only in qrels: {:>10}                                │", stats.overlap.queries_only_in_qrels);
-    println!("│ Documents in both:    {:>10}  ({:.1}% overlap)            │", 
-        stats.overlap.documents_in_both, stats.overlap.document_overlap_ratio * 100.0);
+    println!(
+        "│ Queries in both:      {:>10}  ({:.1}% overlap)            │",
+        stats.overlap.queries_in_both,
+        stats.overlap.query_overlap_ratio * 100.0
+    );
+    println!(
+        "│ Queries only in runs: {:>10}                                │",
+        stats.overlap.queries_only_in_runs
+    );
+    println!(
+        "│ Queries only in qrels: {:>10}                                │",
+        stats.overlap.queries_only_in_qrels
+    );
+    println!(
+        "│ Documents in both:    {:>10}  ({:.1}% overlap)            │",
+        stats.overlap.documents_in_both,
+        stats.overlap.document_overlap_ratio * 100.0
+    );
     println!("└────────────────────────────────────────────────────────────────┘\n");
 
     println!("┌─ Quality Metrics ─────────────────────────────────────────────┐");
-    println!("│ Queries with 2+ runs: {:>10}  ({:.1}% ready)              │", 
-        stats.quality.queries_with_multiple_runs, stats.quality.fusion_readiness_ratio * 100.0);
-    println!("│ Queries with 1 run:   {:>10}                                │", stats.quality.queries_with_single_run);
-    println!("│ Avg runs per query:   {:>10.2}                                │", stats.quality.avg_runs_per_query);
-    println!("│ Fusion readiness:     {:>10.1}%                                │", stats.quality.fusion_readiness_ratio * 100.0);
+    println!(
+        "│ Queries with 2+ runs: {:>10}  ({:.1}% ready)              │",
+        stats.quality.queries_with_multiple_runs,
+        stats.quality.fusion_readiness_ratio * 100.0
+    );
+    println!(
+        "│ Queries with 1 run:   {:>10}                                │",
+        stats.quality.queries_with_single_run
+    );
+    println!(
+        "│ Avg runs per query:   {:>10.2}                                │",
+        stats.quality.avg_runs_per_query
+    );
+    println!(
+        "│ Fusion readiness:     {:>10.1}%                                │",
+        stats.quality.fusion_readiness_ratio * 100.0
+    );
     println!("└────────────────────────────────────────────────────────────────┘\n");
 }
-
-

@@ -92,8 +92,10 @@ pub fn validate_dataset(
     let runs_queries: HashSet<String> = runs.iter().map(|r| r.query_id.clone()).collect();
     let qrels_queries: HashSet<String> = qrels.iter().map(|q| q.query_id.clone()).collect();
     let queries_in_both: HashSet<_> = runs_queries.intersection(&qrels_queries).cloned().collect();
-    let queries_only_in_runs: HashSet<_> = runs_queries.difference(&qrels_queries).cloned().collect();
-    let queries_only_in_qrels: HashSet<_> = qrels_queries.difference(&runs_queries).cloned().collect();
+    let queries_only_in_runs: HashSet<_> =
+        runs_queries.difference(&qrels_queries).cloned().collect();
+    let queries_only_in_qrels: HashSet<_> =
+        qrels_queries.difference(&runs_queries).cloned().collect();
 
     let runs_docs: HashSet<String> = runs.iter().map(|r| r.doc_id.clone()).collect();
     let qrels_docs: HashSet<String> = qrels.iter().map(|q| q.doc_id.clone()).collect();
@@ -121,7 +123,11 @@ pub fn validate_dataset(
     // Check for duplicate query-doc pairs in runs
     let mut seen_runs: HashSet<(String, String, String)> = HashSet::new();
     for run in &runs {
-        let key = (run.query_id.clone(), run.doc_id.clone(), run.run_tag.clone());
+        let key = (
+            run.query_id.clone(),
+            run.doc_id.clone(),
+            run.run_tag.clone(),
+        );
         if !seen_runs.insert(key.clone()) {
             warnings.push(format!(
                 "Duplicate run entry: query={}, doc={}, tag={}",
@@ -155,10 +161,7 @@ pub fn validate_dataset(
         // Group by run_tag
         let mut by_tag: HashMap<String, Vec<&TrecRun>> = HashMap::new();
         for run in query_runs {
-            by_tag
-                .entry(run.run_tag.clone())
-                .or_default()
-                .push(run);
+            by_tag.entry(run.run_tag.clone()).or_default().push(run);
         }
 
         for (tag, tag_runs) in &by_tag {
@@ -169,7 +172,10 @@ pub fn validate_dataset(
                 if run.rank != expected_rank + 1 {
                     warnings.push(format!(
                         "Query {} (tag {}): rank {} not sequential (expected {})",
-                        query_id, tag, run.rank, expected_rank + 1
+                        query_id,
+                        tag,
+                        run.rank,
+                        expected_rank + 1
                     ));
                 }
             }
@@ -210,13 +216,30 @@ pub fn print_validation_report(result: &DatasetValidationResult) {
     println!("║              Dataset Validation Report                         ║");
     println!("╚════════════════════════════════════════════════════════════════╝\n");
 
-    let status = if result.is_valid { "✓ VALID" } else { "✗ INVALID" };
+    let status = if result.is_valid {
+        "✓ VALID"
+    } else {
+        "✗ INVALID"
+    };
     println!("Status: {}\n", status);
 
     println!("Validation Checks:");
-    println!("  Runs:        {}", if result.runs_valid { "✓" } else { "✗" });
-    println!("  Qrels:       {}", if result.qrels_valid { "✓" } else { "✗" });
-    println!("  Consistency: {}", if result.consistency_valid { "✓" } else { "✗" });
+    println!(
+        "  Runs:        {}",
+        if result.runs_valid { "✓" } else { "✗" }
+    );
+    println!(
+        "  Qrels:       {}",
+        if result.qrels_valid { "✓" } else { "✗" }
+    );
+    println!(
+        "  Consistency: {}",
+        if result.consistency_valid {
+            "✓"
+        } else {
+            "✗"
+        }
+    );
 
     if !result.errors.is_empty() {
         println!("\nErrors:");
@@ -235,26 +258,30 @@ pub fn print_validation_report(result: &DatasetValidationResult) {
     println!("\nStatistics:");
     println!("  Runs:        {} entries", result.statistics.runs_count);
     println!("  Qrels:       {} entries", result.statistics.qrels_count);
-    println!("  Queries:     {} in runs, {} in qrels, {} in both",
+    println!(
+        "  Queries:     {} in runs, {} in qrels, {} in both",
         result.statistics.unique_queries_in_runs,
         result.statistics.unique_queries_in_qrels,
         result.statistics.queries_in_both
     );
-    println!("  Documents:   {} in runs, {} in qrels, {} in both",
+    println!(
+        "  Documents:   {} in runs, {} in qrels, {} in both",
         result.statistics.unique_documents_in_runs,
         result.statistics.unique_documents_in_qrels,
         result.statistics.documents_in_both
     );
 
     if result.statistics.queries_only_in_runs > 0 {
-        println!("\n  Note: {} queries in runs but not in qrels (will be skipped)",
-            result.statistics.queries_only_in_runs);
+        println!(
+            "\n  Note: {} queries in runs but not in qrels (will be skipped)",
+            result.statistics.queries_only_in_runs
+        );
     }
 
     if result.statistics.queries_only_in_qrels > 0 {
-        println!("\n  Note: {} queries in qrels but not in runs (cannot evaluate)",
-            result.statistics.queries_only_in_qrels);
+        println!(
+            "\n  Note: {} queries in qrels but not in runs (cannot evaluate)",
+            result.statistics.queries_only_in_qrels
+        );
     }
 }
-
-

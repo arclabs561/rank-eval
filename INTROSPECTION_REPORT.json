@@ -1,0 +1,108 @@
+{
+  "analysis": {
+    "metrics": {
+      "binary": [
+        "average_precision",
+        "compute",
+        "dcg_at_k",
+        "err_at_k",
+        "f_measure_at_k",
+        "idcg_at_k",
+        "mrr",
+        "ndcg_at_k",
+        "precision_at_k",
+        "r_precision",
+        "rbp_at_k",
+        "recall_at_k",
+        "success_at_k"
+      ],
+      "graded": [
+        "compute_map",
+        "compute_ndcg"
+      ],
+      "statistics": [
+        "cohens_d",
+        "compute_comprehensive_stats",
+        "confidence_interval",
+        "paired_t_test",
+        "print_statistics_report"
+      ]
+    },
+    "datasets": {
+      "loaders": [
+        "create_dataset_config",
+        "detect",
+        "detect_dataset_type",
+        "get_dataset_stats",
+        "list_datasets",
+        "load_beir_qrels",
+        "load_beir_runs",
+        "load_hotpotqa_qrels",
+        "load_hotpotqa_runs",
+        "load_miracl_qrels",
+        "load_miracl_runs",
+        "load_msmarco_qrels",
+        "load_msmarco_runs",
+        "load_mteb_qrels",
+        "load_mteb_runs",
+        "load_natural_questions_qrels",
+        "load_natural_questions_runs",
+        "load_trec_qrels_from_dir",
+        "load_trec_runs_from_dir",
+        "name",
+        "validate_dataset_dir"
+      ],
+      "types": [
+        "DatasetType"
+      ]
+    },
+    "modules": [
+      "batch",
+      "binary",
+      "dataset",
+      "export",
+      "graded",
+      "statistics",
+      "trec",
+      "validation"
+    ],
+    "structs": [
+      "BatchResults",
+      "ComprehensiveStats",
+      "DatasetMetadata",
+      "DatasetStats",
+      "DatasetValidationResult",
+      "Metrics",
+      "OverlapStatistics",
+      "Percentiles",
+      "Qrel",
+      "QrelStatistics",
+      "QualityMetrics",
+      "QueryResults",
+      "RunStatistics",
+      "ScoreDistribution",
+      "TTestResult",
+      "TrecRun",
+      "ValidationStatistics"
+    ],
+    "enums": [
+      "DatasetType",
+      "ValidationError"
+    ],
+    "features": [],
+    "exports": [
+      "batch::",
+      "binary::Metrics",
+      "export::export_to_csv",
+      "export::export_to_json",
+      "statistics::",
+      "trec::",
+      "validation::"
+    ]
+  },
+  "summary": {
+    "total_metrics": 20,
+    "total_datasets": 21,
+    "total_modules": 8
+  }
+}

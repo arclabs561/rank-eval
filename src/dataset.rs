@@ -5,14 +5,13 @@
 #[cfg(feature = "serde")]
 mod loaders;
 #[cfg(feature = "serde")]
-mod validator;
-#[cfg(feature = "serde")]
 mod statistics;
+#[cfg(feature = "serde")]
+mod validator;
 
 #[cfg(feature = "serde")]
 pub use loaders::*;
 #[cfg(feature = "serde")]
-pub use validator::*;
-#[cfg(feature = "serde")]
 pub use statistics::*;
-
+#[cfg(feature = "serde")]
+pub use validator::*;

@@ -84,15 +84,16 @@ pub fn load_trec_runs(path: impl AsRef<Path>) -> Result<Vec<TrecRun>> {
         let score: f32 = parts[4]
             .parse()
             .with_context(|| format!("Invalid score on line {}: {}", line_num + 1, parts[4]))?;
-        
+
         // Validate score is finite
         if !score.is_finite() {
             return Err(anyhow::anyhow!(
                 "Line {}: Invalid score (NaN or Infinity): {}",
-                line_num + 1, score
+                line_num + 1,
+                score
             ));
         }
-        
+
         // Handle run_tag that might contain spaces (join remaining parts)
         let run_tag = if parts.len() > 6 {
             parts[5..].join(" ")
@@ -218,20 +219,20 @@ pub fn group_qrels_by_query(qrels: &[Qrel]) -> HashMap<String, HashMap<String, u
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::TempDir;
     use std::fs;
     use std::io::Write;
+    use tempfile::TempDir;
 
     #[test]
     fn test_load_trec_runs() {
         let dir = TempDir::new().unwrap();
         let file_path = dir.path().join("runs.txt");
         let mut file = fs::File::create(&file_path).unwrap();
-        
+
         writeln!(file, "1 Q0 doc1 1 0.9 run1").unwrap();
         writeln!(file, "1 Q0 doc2 2 0.8 run1").unwrap();
         writeln!(file, "2 Q0 doc3 1 0.95 run1").unwrap();
-        
+
         let runs = load_trec_runs(&file_path).unwrap();
         assert_eq!(runs.len(), 3);
         assert_eq!(runs[0].query_id, "1");
@@ -246,11 +247,11 @@ mod tests {
         let dir = TempDir::new().unwrap();
         let file_path = dir.path().join("qrels.txt");
         let mut file = fs::File::create(&file_path).unwrap();
-        
+
         writeln!(file, "1 0 doc1 2").unwrap();
         writeln!(file, "1 0 doc2 1").unwrap();
         writeln!(file, "2 0 doc3 2").unwrap();
-        
+
         let qrels = load_qrels(&file_path).unwrap();
         assert_eq!(qrels.len(), 3);
         assert_eq!(qrels[0].query_id, "1");
@@ -261,11 +262,29 @@ mod tests {
     #[test]
     fn test_group_runs_by_query() {
         let runs = vec![
-            TrecRun { query_id: "1".to_string(), doc_id: "doc1".to_string(), rank: 1, score: 0.9, run_tag: "run1".to_string() },
-            TrecRun { query_id: "1".to_string(), doc_id: "doc2".to_string(), rank: 2, score: 0.8, run_tag: "run1".to_string() },
-            TrecRun { query_id: "2".to_string(), doc_id: "doc3".to_string(), rank: 1, score: 0.95, run_tag: "run1".to_string() },
+            TrecRun {
+                query_id: "1".to_string(),
+                doc_id: "doc1".to_string(),
+                rank: 1,
+                score: 0.9,
+                run_tag: "run1".to_string(),
+            },
+            TrecRun {
+                query_id: "1".to_string(),
+                doc_id: "doc2".to_string(),
+                rank: 2,
+                score: 0.8,
+                run_tag: "run1".to_string(),
+            },
+            TrecRun {
+                query_id: "2".to_string(),
+                doc_id: "doc3".to_string(),
+                rank: 1,
+                score: 0.95,
+                run_tag: "run1".to_string(),
+            },
         ];
-        
+
         let grouped = group_runs_by_query(&runs);
         assert_eq!(grouped.len(), 2);
         assert!(grouped.contains_key("1"));
@@ -276,11 +295,23 @@ mod tests {
     #[test]
     fn test_group_qrels_by_query() {
         let qrels = vec![
-            Qrel { query_id: "1".to_string(), doc_id: "doc1".to_string(), relevance: 2 },
-            Qrel { query_id: "1".to_string(), doc_id: "doc2".to_string(), relevance: 1 },
-            Qrel { query_id: "2".to_string(), doc_id: "doc3".to_string(), relevance: 2 },
+            Qrel {
+                query_id: "1".to_string(),
+                doc_id: "doc1".to_string(),
+                relevance: 2,
+            },
+            Qrel {
+                query_id: "1".to_string(),
+                doc_id: "doc2".to_string(),
+                relevance: 1,
+            },
+            Qrel {
+                query_id: "2".to_string(),
+                doc_id: "doc3".to_string(),
+                relevance: 2,
+            },
         ];
-        
+
         let grouped = group_qrels_by_query(&qrels);
         assert_eq!(grouped.len(), 2);
         assert!(grouped.contains_key("1"));
@@ -293,9 +324,9 @@ mod tests {
         let dir = TempDir::new().unwrap();
         let file_path = dir.path().join("runs.txt");
         let mut file = fs::File::create(&file_path).unwrap();
-        
+
         writeln!(file, "1 Q0 doc1 1 0.9 my run tag").unwrap();
-        
+
         let runs = load_trec_runs(&file_path).unwrap();
         assert_eq!(runs[0].run_tag, "my run tag");
     }
@@ -305,11 +336,10 @@ mod tests {
         let dir = TempDir::new().unwrap();
         let file_path = dir.path().join("bad_runs.txt");
         let mut file = fs::File::create(&file_path).unwrap();
-        
+
         writeln!(file, "1 doc1 1 0.9").unwrap(); // Missing Q0
-        
+
         let result = load_trec_runs(&file_path);
         assert!(result.is_err());
     }
 }
-

@@ -3,7 +3,7 @@
 #[cfg(feature = "serde")]
 mod tests {
     use rank_eval::dataset::*;
-    use rank_eval::trec::{load_trec_runs, load_qrels};
+    use rank_eval::trec::{load_qrels, load_trec_runs};
     use std::fs;
     use std::io::Write;
     use tempfile::TempDir;
@@ -12,7 +12,7 @@ mod tests {
         let dir = TempDir::new().unwrap();
         let file_path = dir.path().join("runs.txt");
         let mut file = fs::File::create(&file_path).unwrap();
-        
+
         writeln!(file, "1 Q0 doc1 1 0.95 bm25").unwrap();
         writeln!(file, "1 Q0 doc2 2 0.87 bm25").unwrap();
         writeln!(file, "1 Q0 doc3 3 0.75 bm25").unwrap();
@@ -21,7 +21,7 @@ mod tests {
         writeln!(file, "1 Q0 doc2 1 0.93 dense").unwrap();
         writeln!(file, "1 Q0 doc1 2 0.88 dense").unwrap();
         writeln!(file, "1 Q0 doc3 3 0.82 dense").unwrap();
-        
+
         (dir, file_path)
     }
 
@@ -29,13 +29,13 @@ mod tests {
         let dir = TempDir::new().unwrap();
         let file_path = dir.path().join("qrels.txt");
         let mut file = fs::File::create(&file_path).unwrap();
-        
+
         writeln!(file, "1 0 doc1 2").unwrap();
         writeln!(file, "1 0 doc2 1").unwrap();
         writeln!(file, "1 0 doc3 0").unwrap();
         writeln!(file, "2 0 doc4 2").unwrap();
         writeln!(file, "2 0 doc5 1").unwrap();
-        
+
         (dir, file_path)
     }
 
@@ -119,17 +119,17 @@ mod tests {
     #[test]
     fn test_validate_dataset_dir() {
         let dir = TempDir::new().unwrap();
-        
+
         // Create a run file
         let runs_file = dir.path().join("runs.txt");
         let mut file = fs::File::create(&runs_file).unwrap();
         writeln!(file, "1 Q0 doc1 1 0.9 bm25").unwrap();
-        
+
         // Create a qrels file
         let qrels_file = dir.path().join("qrels.txt");
         let mut file = fs::File::create(&qrels_file).unwrap();
         writeln!(file, "1 0 doc1 2").unwrap();
-        
+
         let is_valid = validate_dataset_dir(dir.path()).unwrap();
         assert!(is_valid);
     }
@@ -139,7 +139,7 @@ mod tests {
         let dir = TempDir::new().unwrap();
         let dataset1 = dir.path().join("dataset1");
         let dataset2 = dir.path().join("dataset2");
-        
+
         fs::create_dir(&dataset1).unwrap();
         fs::create_dir(&dataset2).unwrap();
 
@@ -152,11 +152,11 @@ mod tests {
     #[test]
     fn test_dataset_type_detection() {
         let dir = TempDir::new().unwrap();
-        
+
         // Test default (TREC)
         let dataset_type = DatasetType::detect(dir.path()).unwrap();
         assert_eq!(dataset_type, DatasetType::Trec);
-        
+
         // Test MS MARCO
         let msmarco_dir = dir.path().join("msmarco");
         fs::create_dir(&msmarco_dir).unwrap();
@@ -260,4 +260,3 @@ mod tests {
         assert!(stats.quality.avg_runs_per_query > 1.0);
     }
 }
-

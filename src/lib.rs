@@ -50,23 +50,27 @@
 //! # }
 //! ```
 
-pub mod trec;
-pub mod binary;
-pub mod graded;
-pub mod validation;
 pub mod batch;
-pub mod statistics;
+pub mod binary;
 pub mod export;
+pub mod graded;
+pub mod statistics;
+pub mod trec;
+pub mod validation;
 
 #[cfg(feature = "serde")]
 pub mod dataset;
 
 // Re-export commonly used items
-pub use trec::{TrecRun, Qrel, load_trec_runs, load_qrels, group_runs_by_query, group_qrels_by_query};
-pub use validation::{ValidationError, validate_metric_inputs, validate_persistence, validate_beta};
-pub use batch::{BatchResults, QueryResults, evaluate_batch_binary, evaluate_trec_batch};
-pub use statistics::{TTestResult, paired_t_test, confidence_interval, cohens_d};
-pub use export::{export_to_csv};
+pub use batch::{evaluate_batch_binary, evaluate_trec_batch, BatchResults, QueryResults};
+pub use export::export_to_csv;
+pub use statistics::{cohens_d, confidence_interval, paired_t_test, TTestResult};
+pub use trec::{
+    group_qrels_by_query, group_runs_by_query, load_qrels, load_trec_runs, Qrel, TrecRun,
+};
+pub use validation::{
+    validate_beta, validate_metric_inputs, validate_persistence, ValidationError,
+};
 
 #[cfg(feature = "serde")]
 pub use binary::Metrics;

@@ -122,10 +122,7 @@ mod tests {
 
     #[test]
     fn test_export_to_csv() {
-        let rankings = vec![
-            vec!["doc1", "doc2", "doc3"],
-            vec!["doc4", "doc5", "doc6"],
-        ];
+        let rankings = vec![vec!["doc1", "doc2", "doc3"], vec!["doc4", "doc5", "doc6"]];
         let qrels = vec![
             ["doc1", "doc3"].into_iter().collect::<HashSet<_>>(),
             ["doc4"].into_iter().collect::<HashSet<_>>(),
@@ -155,4 +152,3 @@ mod tests {
         assert!(json.contains("ndcg@10"));
     }
 }
-

@@ -1,0 +1,35 @@
+---
+title: "rank-eval Specific Rules"
+id: eval-specific
+description: "Repository-specific rules for rank-eval"
+priority: 50
+alwaysApply: true
+---
+
+# rank-eval Specific Rules
+
+These rules extend the shared base rules with eval-specific guidelines.
+
+## Metric-Specific
+
+- **NDCG**: Default to NDCG@10 unless specified
+- **TREC format**: Standard input/output format
+- **Batch evaluation**: Support for large-scale evaluation
+
+## Data Sources
+
+- TREC format files (runs and qrels)
+- Evaluation results from batch processing
+- Metric accumulation over queries
+
+## Testing
+
+- Metric correctness verified against known baselines
+- TREC format parsing handles edge cases
+- Batch evaluation scales to large datasets
+
+## Documentation
+
+- Metric formulas with visualizations
+- TREC format examples in README
+- Evaluation workflow documented

@@ -25,7 +25,7 @@
 use ::rank_eval::binary;
 use ::rank_eval::graded;
 use pyo3::prelude::*;
-use pyo3::types::{PyList, PySet, PyDict, PyTuple};
+use pyo3::types::{PyDict, PyList, PySet, PyTuple};
 
 /// Python module for rank-eval.
 #[pymodule]
@@ -39,43 +39,51 @@ fn rank_eval_module(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(idcg_at_k_py, m)?)?;
     m.add_function(wrap_pyfunction!(ndcg_at_k_py, m)?)?;
     m.add_function(wrap_pyfunction!(average_precision_py, m)?)?;
-    
+
     // Graded relevance metrics
     m.add_function(wrap_pyfunction!(compute_ndcg_py, m)?)?;
     m.add_function(wrap_pyfunction!(compute_map_py, m)?)?;
-    
+
     Ok(())
 }
 
 /// Precision at rank k.
 #[pyfunction]
-fn precision_at_k_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>, k: usize) -> PyResult<f64> {
+fn precision_at_k_py(
+    ranked: &Bound<'_, PyList>,
+    relevant: &Bound<'_, PySet>,
+    k: usize,
+) -> PyResult<f64> {
     let ranked_vec: Vec<String> = ranked
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::precision_at_k(&ranked_vec, &relevant_set, k))
 }
 
 /// Recall at rank k.
 #[pyfunction]
-fn recall_at_k_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>, k: usize) -> PyResult<f64> {
+fn recall_at_k_py(
+    ranked: &Bound<'_, PyList>,
+    relevant: &Bound<'_, PySet>,
+    k: usize,
+) -> PyResult<f64> {
     let ranked_vec: Vec<String> = ranked
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::recall_at_k(&ranked_vec, &relevant_set, k))
 }
 
@@ -86,12 +94,12 @@ fn mrr_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>) -> PyResult<f
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::mrr(&ranked_vec, &relevant_set))
 }
 
@@ -102,40 +110,48 @@ fn dcg_at_k_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>, k: usize
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::dcg_at_k(&ranked_vec, &relevant_set, k))
 }
 
 /// Ideal DCG at rank k.
 #[pyfunction]
-fn idcg_at_k_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>, k: usize) -> PyResult<f64> {
+fn idcg_at_k_py(
+    ranked: &Bound<'_, PyList>,
+    relevant: &Bound<'_, PySet>,
+    k: usize,
+) -> PyResult<f64> {
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     let n_relevant = relevant_set.len();
     Ok(binary::idcg_at_k(n_relevant, k))
 }
 
 /// Normalized DCG at rank k.
 #[pyfunction]
-fn ndcg_at_k_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>, k: usize) -> PyResult<f64> {
+fn ndcg_at_k_py(
+    ranked: &Bound<'_, PyList>,
+    relevant: &Bound<'_, PySet>,
+    k: usize,
+) -> PyResult<f64> {
     let ranked_vec: Vec<String> = ranked
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::ndcg_at_k(&ranked_vec, &relevant_set, k))
 }
 
@@ -146,12 +162,12 @@ fn average_precision_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>)
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::average_precision(&ranked_vec, &relevant_set))
 }
 
@@ -162,12 +178,12 @@ fn err_at_k_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>, k: usize
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::err_at_k(&ranked_vec, &relevant_set, k))
 }
 
@@ -183,12 +199,12 @@ fn rbp_at_k_py(
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::rbp_at_k(&ranked_vec, &relevant_set, k, persistence))
 }
 
@@ -204,28 +220,32 @@ fn f_measure_at_k_py(
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::f_measure_at_k(&ranked_vec, &relevant_set, k, beta))
 }
 
 /// Success at k: whether at least one relevant document is in top-k.
 #[pyfunction]
-fn success_at_k_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>, k: usize) -> PyResult<f64> {
+fn success_at_k_py(
+    ranked: &Bound<'_, PyList>,
+    relevant: &Bound<'_, PySet>,
+    k: usize,
+) -> PyResult<f64> {
     let ranked_vec: Vec<String> = ranked
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::success_at_k(&ranked_vec, &relevant_set, k))
 }
 
@@ -236,12 +256,12 @@ fn r_precision_py(ranked: &Bound<'_, PyList>, relevant: &Bound<'_, PySet>) -> Py
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let relevant_set: std::collections::HashSet<String> = relevant
         .iter()
         .map(|v| v.extract::<String>())
         .collect::<Result<std::collections::HashSet<_>, _>>()?;
-    
+
     Ok(binary::r_precision(&ranked_vec, &relevant_set))
 }
 
@@ -261,23 +281,20 @@ fn compute_ndcg_py(
             Ok((id, score as f32))
         })
         .collect::<PyResult<Vec<_>>>()?;
-    
+
     let mut qrels_map = std::collections::HashMap::new();
     for (key, value) in qrels.iter() {
         let id: String = key.extract()?;
         let relevance: u32 = value.extract()?;
         qrels_map.insert(id, relevance);
     }
-    
+
     Ok(graded::compute_ndcg(&ranked_vec, &qrels_map, k) as f64)
 }
 
 /// Compute MAP for graded relevance.
 #[pyfunction]
-fn compute_map_py(
-    ranked: &Bound<'_, PyList>,
-    qrels: &Bound<'_, PyDict>,
-) -> PyResult<f64> {
+fn compute_map_py(ranked: &Bound<'_, PyList>, qrels: &Bound<'_, PyDict>) -> PyResult<f64> {
     let ranked_vec: Vec<(String, f32)> = ranked
         .iter()
         .map(|v| {
@@ -287,14 +304,13 @@ fn compute_map_py(
             Ok((id, score as f32))
         })
         .collect::<PyResult<Vec<_>>>()?;
-    
+
     let mut qrels_map = std::collections::HashMap::new();
     for (key, value) in qrels.iter() {
         let id: String = key.extract()?;
         let relevance: u32 = value.extract()?;
         qrels_map.insert(id, relevance);
     }
-    
+
     Ok(graded::compute_map(&ranked_vec, &qrels_map) as f64)
 }
-
