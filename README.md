@@ -1,10 +1,3 @@
-# ⚠️ This repository has been archived
+# ⚠️ Archived
 
-This crate has moved to the [rank-rank monorepo](https://github.com/arclabs561/rank-rank).
-
-- **Source**: https://github.com/arclabs561/rank-rank/tree/main/crates/rank-eval
-- **Issues**: https://github.com/arclabs561/rank-rank/issues
-- **Releases**: https://github.com/arclabs561/rank-rank/releases
-- **Documentation**: https://docs.rs/rank-eval
-
-All development now happens in the monorepo. This repository is kept for historical reference only.
+Moved to [rank-rank monorepo](https://github.com/arclabs561/rank-rank/tree/main/crates/rank-eval)
